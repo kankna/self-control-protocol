@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#17201b">
+  <meta name="description" content="把 CTDP 与 RSIP 变成可执行的移动端自控协议。">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="自控协议">
+  <title>自控协议 · CTDP / RSIP 试水版</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="i-chain" viewBox="0 0 24 24">
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+    </symbol>
+    <symbol id="i-timer" viewBox="0 0 24 24">
+      <path d="M10 2h4"/>
+      <path d="M12 14V8"/>
+      <circle cx="12" cy="14" r="8"/>
+    </symbol>
+    <symbol id="i-tree" viewBox="0 0 24 24">
+      <path d="M6 3v12"/>
+      <circle cx="18" cy="6" r="3"/>
+      <circle cx="6" cy="18" r="3"/>
+      <path d="M18 9a9 9 0 0 1-9 9"/>
+    </symbol>
+    <symbol id="i-book" viewBox="0 0 24 24">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+    </symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24">
+      <path d="M3 3v18h18"/>
+      <path d="m7 16 4-5 4 3 5-7"/>
+    </symbol>
+    <symbol id="i-play" viewBox="0 0 24 24">
+      <polygon points="6 3 20 12 6 21 6 3"/>
+    </symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M12 7v5l3 2"/>
+    </symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24">
+      <path d="M5 12h14"/>
+      <path d="M12 5v14"/>
+    </symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24">
+      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+      <path d="m9 12 2 2 4-4"/>
+    </symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24">
+      <path d="M10.3 2.9 1.8 17a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 2.9a2 2 0 0 0-3.4 0z"/>
+      <path d="M12 9v4"/>
+      <path d="M12 17h.01"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24">
+      <path d="m20 6-11 11-5-5"/>
+    </symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24">
+      <path d="M9 14 4 9l5-5"/>
+      <path d="M4 9h10a6 6 0 0 1 0 12h-3"/>
+    </symbol>
+    <symbol id="i-download" viewBox="0 0 24 24">
+      <path d="M12 3v12"/>
+      <path d="m7 10 5 5 5-5"/>
+      <path d="M5 21h14"/>
+    </symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24">
+      <path d="M12 21V9"/>
+      <path d="m17 14-5-5-5 5"/>
+      <path d="M5 3h14"/>
+    </symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.37a1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.88.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.63 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.88l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.63a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.88-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.37 9c.14.6.65 1.04 1.26 1.04H21a2 2 0 1 1 0 4h-.09A1.7 1.7 0 0 0 19.4 15z"/>
+    </symbol>
+    <symbol id="i-x" viewBox="0 0 24 24">
+      <path d="M18 6 6 18"/>
+      <path d="m6 6 12 12"/>
+    </symbol>
+    <symbol id="i-snow" viewBox="0 0 24 24">
+      <path d="m2 12 20 0"/>
+      <path d="m12 2 0 20"/>
+      <path d="m20 16-4-4 4-4"/>
+      <path d="m4 8 4 4-4 4"/>
+      <path d="m16 4-4 4-4-4"/>
+      <path d="m8 20 4-4 4 4"/>
+    </symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24">
+      <path d="M12 3v3"/>
+      <path d="M12 18v3"/>
+      <path d="M3 12h3"/>
+      <path d="M18 12h3"/>
+      <path d="m5.6 5.6 2.1 2.1"/>
+      <path d="m16.3 16.3 2.1 2.1"/>
+      <path d="m18.4 5.6-2.1 2.1"/>
+      <path d="m7.7 16.3-2.1 2.1"/>
+    </symbol>
+  </svg>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#now" aria-label="回到现在">
+        <span class="brand-mark" aria-hidden="true">
+          <svg><use href="#i-chain"></use></svg>
+        </span>
+        <span class="brand-copy">
+          <strong>自控协议</strong>
+          <small>CTDP / RSIP FIELD KIT</small>
+        </span>
+      </a>
+      <div class="top-status">
+        <span class="status-dot" id="network-dot"></span>
+        <span id="network-label">本地</span>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section class="view is-active" id="view-now" data-view="now">
+        <div class="protocol-line reveal">
+          <span>PROTOCOL 01</span>
+          <span id="today-label"></span>
+        </div>
+
+        <section class="chain-hero reveal delay-1" aria-labelledby="chain-title">
+          <div class="hero-meta">
+            <p class="eyebrow" id="chain-title">主任务链</p>
+            <button class="text-button" id="edit-anchor-button" type="button">锚点设置</button>
+          </div>
+          <div class="chain-number" id="chain-number" aria-label="当前主链长度">
+            <span class="hash">#</span><span id="main-chain-count">0</span>
+          </div>
+          <div class="chain-copy">
+            <p id="chain-message">先定义一个具体动作，让身体知道：锚点一触发，就必须专注。</p>
+            <div class="chain-stats">
+              <span><b id="best-chain">0</b> 最高链</span>
+              <span><b id="total-sessions">0</b> 次完成</span>
+              <span><b id="focus-minutes">0</b> 分钟</span>
+            </div>
+          </div>
+          <div class="chain-track" aria-hidden="true">
+            <span id="chain-track-fill"></span>
+          </div>
+        </section>
+
+        <section class="panel run-panel reveal delay-2" aria-labelledby="run-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">启动台</p>
+              <h1 id="run-title">现在这一步</h1>
+            </div>
+            <button class="icon-button" id="anchor-help" type="button" aria-label="锚点使用说明">
+              <svg><use href="#i-alert"></use></svg>
+            </button>
+          </div>
+
+          <div class="anchor-card" id="anchor-card">
+            <div class="anchor-icon">
+              <svg><use href="#i-spark"></use></svg>
+            </div>
+            <div>
+              <strong id="anchor-action">尚未设置神圣锚点</strong>
+              <p id="anchor-condition">设置一个 5 秒内能做到、且足够显眼的动作。</p>
+            </div>
+          </div>
+
+          <div class="action-stack">
+            <button class="button button-primary button-large" id="start-now-button" type="button">
+              <svg><use href="#i-play"></use></svg>
+              <span>触发锚点，直接开始</span>
+            </button>
+            <div class="split-actions">
+              <button class="button button-secondary" id="arm-appointment-button" type="button">
+                <svg><use href="#i-clock"></use></svg>
+                <span>预约 15 分钟</span>
+              </button>
+              <button class="button button-quiet" id="start-scout-button" type="button">
+                <svg><use href="#i-timer"></use></svg>
+                <span>5 分钟侦查</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="appointment-banner" id="appointment-banner" hidden></div>
+        </section>
+
+        <section class="panel reveal delay-3" aria-labelledby="state-title">
+          <div class="section-heading compact">
+            <div>
+              <p class="eyebrow">边界条件</p>
+              <h2 id="state-title">今天属于哪种局面？</h2>
+            </div>
+            <span class="tiny-note">影响国策建议</span>
+          </div>
+          <div class="state-selector" id="state-selector" role="group" aria-label="今日状态">
+            <button type="button" data-state="逆风"><span>逆风</span><small>只守成</small></button>
+            <button type="button" data-state="一般"><span>一般</span><small>加小策</small></button>
+            <button type="button" data-state="顺风"><span>顺风</span><small>可扩线</small></button>
+          </div>
+          <p class="state-advice" id="state-advice">先判断状态。逆风局里，不加任何靠主动性维持的新规则。</p>
+        </section>
+
+        <section class="panel compact-panel reveal delay-4" aria-labelledby="today-policy-title">
+          <div class="section-heading compact">
+            <div>
+              <p class="eyebrow">RSIP</p>
+              <h2 id="today-policy-title">今日国策</h2>
+            </div>
+            <button class="text-button" type="button" data-go="policies">查看树</button>
+          </div>
+          <div class="today-policy-summary" id="today-policy-summary"></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-policies" data-view="policies">
+        <div class="protocol-line reveal">
+          <span>PROTOCOL 02</span>
+          <span>递归稳态迭代</span>
+        </div>
+        <section class="page-intro reveal delay-1">
+          <p class="eyebrow">国策树</p>
+          <h1>只在有效节点上花力气</h1>
+          <p>每天最多新增一条。规则崩塌时，连同它的子节点一起回滚；这不是道德失败，而是系统给出的调试信号。</p>
+        </section>
+
+        <section class="policy-toolbar reveal delay-2">
+          <div class="toolbar-stat">
+            <span>已点亮</span>
+            <strong id="policy-count">0</strong>
+          </div>
+          <div class="toolbar-stat">
+            <span>最久存活</span>
+            <strong><span id="policy-oldest">0</span><small>天</small></strong>
+          </div>
+          <button class="button button-primary" id="add-policy-button" type="button">
+            <svg><use href="#i-plus"></use></svg>
+            <span>添加国策</span>
+          </button>
+        </section>
+
+        <div class="freeze-banner" id="freeze-banner" hidden></div>
+
+        <section class="panel policy-panel reveal delay-3" aria-labelledby="tree-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">边缘条件上的桥头堡</p>
+              <h2 id="tree-title">当前稳态</h2>
+            </div>
+            <button class="icon-button" id="freeze-button" type="button" aria-label="启动水密隔舱">
+              <svg><use href="#i-snow"></use></svg>
+            </button>
+          </div>
+          <div class="policy-tree" id="policy-tree"></div>
+        </section>
+
+        <section class="guide-callout reveal delay-4">
+          <svg><use href="#i-shield"></use></svg>
+          <div>
+            <strong>守住时不用打卡</strong>
+            <p>只有规则被打破时才来点名。减少每天的主动决策，本身就是一条国策。</p>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="view-guide" data-view="guide">
+        <div class="protocol-line reveal">
+          <span>FIELD MANUAL</span>
+          <span>模型与边界</span>
+        </div>
+        <section class="page-intro reveal delay-1">
+          <p class="eyebrow">原理总图</p>
+          <h1>小时级破启动，天级改稳态</h1>
+          <p>CTDP 处理“一小时尺度内的这一次行为”；RSIP 处理“跨天存活、逐步改善的边界条件”。两者不是意志力鸡汤，而是两套规则结构。</p>
+        </section>
+
+        <section class="protocol-diagram reveal delay-2" aria-label="两代协议关系">
+          <div class="diagram-node">
+            <span>CTDP</span>
+            <strong>神圣锚点 + 下必为例 + 15 分钟预约</strong>
+            <small>把放弃的代价压到此刻，把启动平移到 15 分钟后。</small>
+          </div>
+          <div class="diagram-arrow" aria-hidden="true">↓</div>
+          <div class="diagram-node accent">
+            <span>RSIP</span>
+            <strong>局部定式 + 堆栈回滚 + 递归迭代</strong>
+            <small>每天最多加一条，失败时撤回子树，改变更大的稳态。</small>
+          </div>
+        </section>
+
+        <section class="panel reveal delay-3">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">可检索的证据</p>
+              <h2>哪些是模型，哪些有研究支持</h2>
+            </div>
+          </div>
+          <div class="evidence-list">
+            <details open>
+              <summary>
+                <span class="evidence-tag strong">较强</span>
+                <strong>实施意图：如果 X，就做 Y</strong>
+              </summary>
+              <p>把行动挂到明确触发条件上，通常比“以后要做”更有效。大量实验研究显示，它有助于缩短“想到”与“开始”之间的间隙。网站里的“触发条件 + 具体动作”直接采用这一点。</p>
+              <a href="https://doi.org/10.1037/0033-2909.132.2.249" target="_blank" rel="noreferrer">Gollwitzer &amp; Sheeran, 2006</a>
+            </details>
+            <details>
+              <summary>
+                <span class="evidence-tag medium">中等</span>
+                <strong>承诺装置与损失厌恶</strong>
+              </summary>
+              <p>把某个行为与即时、确定的小损失绑定，能提高完成率，但效应受情境和个体差异影响。CTDP 的“清空全链”是这种机制的强化版，适合自我实验，不应被神化。</p>
+            </details>
+            <details>
+              <summary>
+                <span class="evidence-tag medium">描述模型</span>
+                <strong>双曲贴现：眼前价值权重更高</strong>
+              </summary>
+              <p>跨期选择中，人们常表现得比指数贴现更偏向眼前收益。原文的积分 V(τ)·W(τ) 是对这类现象的概念模型，不应理解为已经定位到某个精确脑区或固定公式。</p>
+            </details>
+            <details>
+              <summary>
+                <span class="evidence-tag analogy">启发式类比</span>
+                <strong>不可逃逸区、重整化群与生活稳态</strong>
+              </summary>
+              <p>把复杂系统科学的尺度思想迁移到日常行为，是很有解释力的设计隐喻，但不是严格的因果证明。网站因此只保留可验证的动作：找早节点、减小动作、低风险试错、失败回滚。</p>
+            </details>
+          </div>
+        </section>
+
+        <section class="panel reveal delay-4">
+          <div class="section-heading compact">
+            <div>
+              <p class="eyebrow">使用边界</p>
+              <h2>不要把它变成新的自我攻击</h2>
+            </div>
+          </div>
+          <div class="boundary-list">
+            <p><b>不是医疗建议。</b>如果注意力、情绪或睡眠问题已经持续影响工作、学习与生活，优先寻求专业评估。ADHD、抑郁、焦虑不是靠“更坚定”就能解决的。</p>
+            <p><b>一次崩塌不是失败人格。</b>它只说明当前规则太贵、触发太模糊，或大状态不允许。先缩小，再重试。</p>
+            <p><b>不要同时添加多条规矩。</b>每天最多一条是护栏，不是保守。主动型规则越多，后台决策负担越高。</p>
+            <p><b>用两周做自测。</b>比较平均完成次数、最长链、崩塌频率和主观负担；没有改善就停，不把工具本身变成殉道。</p>
+          </div>
+        </section>
+
+        <section class="source-card reveal delay-5">
+          <p class="eyebrow">来源与署名</p>
+          <h2>《自制力问题的两代自控技术》</h2>
+          <p>作者：edmond。本文的 CTDP、RSIP、神圣座位原理、下必为例原理与国策树概念均来自原文；本网站是非官方、非商业的交互化试水版。</p>
+          <div class="source-links">
+            <a href="https://www.zhihu.com/question/19888447/answer/1930799480401293785" target="_blank" rel="noreferrer">查看知乎原文 <span>↗</span></a>
+            <a href="./source/如何提高自制力-CTDP与RSIP全文.md" download>下载原文 Markdown</a>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="view-records" data-view="records">
+        <div class="protocol-line reveal">
+          <span>LOG / 28D</span>
+          <span>只存本机</span>
+        </div>
+        <section class="page-intro reveal delay-1">
+          <p class="eyebrow">记录台</p>
+          <h1>看趋势，不看一时状态</h1>
+          <p>数据保存在当前浏览器。可以导出 JSON 备份，也可以在新的手机上导入。</p>
+        </section>
+
+        <section class="metric-grid reveal delay-2">
+          <article>
+            <span>完成专注</span>
+            <strong id="metric-sessions">0</strong>
+            <small>次</small>
+          </article>
+          <article>
+            <span>累计时间</span>
+            <strong id="metric-hours">0</strong>
+            <small>小时</small>
+          </article>
+          <article>
+            <span>最长主链</span>
+            <strong id="metric-best">0</strong>
+            <small>节点</small>
+          </article>
+          <article>
+            <span>国策回滚</span>
+            <strong id="metric-rollbacks">0</strong>
+            <small>次</small>
+          </article>
+        </section>
+
+        <section class="panel reveal delay-3" aria-labelledby="activity-title">
+          <div class="section-heading compact">
+            <div>
+              <p class="eyebrow">最近 28 天</p>
+              <h2 id="activity-title">专注完成图谱</h2>
+            </div>
+            <span class="tiny-note">颜色越深，完成次数越多</span>
+          </div>
+          <div class="activity-grid" id="activity-grid"></div>
+        </section>
+
+        <section class="panel reveal delay-4" aria-labelledby="log-title">
+          <div class="section-heading compact">
+            <div>
+              <p class="eyebrow">不可篡改的本地流水</p>
+              <h2 id="log-title">最近记录</h2>
+            </div>
+          </div>
+          <div class="log-list" id="log-list"></div>
+        </section>
+
+        <section class="data-actions reveal delay-5">
+          <button class="button button-secondary" id="export-button" type="button">
+            <svg><use href="#i-download"></use></svg>
+            <span>导出备份</span>
+          </button>
+          <label class="button button-secondary" for="import-input">
+            <svg><use href="#i-upload"></use></svg>
+            <span>导入备份</span>
+          </label>
+          <input id="import-input" type="file" accept="application/json" hidden>
+          <button class="button button-danger-quiet" id="reset-button" type="button">
+            <svg><use href="#i-undo"></use></svg>
+            <span>重置全部</span>
+          </button>
+        </section>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="主导航">
+      <button class="nav-item is-active" type="button" data-go="now">
+        <svg><use href="#i-chain"></use></svg>
+        <span>现在</span>
+      </button>
+      <button class="nav-item" type="button" data-go="policies">
+        <svg><use href="#i-tree"></use></svg>
+        <span>国策</span>
+      </button>
+      <button class="nav-item" type="button" data-go="guide">
+        <svg><use href="#i-book"></use></svg>
+        <span>原理</span>
+      </button>
+      <button class="nav-item" type="button" data-go="records">
+        <svg><use href="#i-chart"></use></svg>
+        <span>记录</span>
+      </button>
+    </nav>
+  </div>
+
+  <div class="session-screen" id="session-screen" hidden aria-live="polite"></div>
+  <div class="modal-root" id="modal-root" hidden></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="./app.js" defer></script>
+</body>
+</html>
